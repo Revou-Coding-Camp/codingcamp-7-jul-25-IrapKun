@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Simple To-Do List</title>
+    <style>
+        /* General reset and background */
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #004030;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* Main card container */
+        .todo-container {
+            background-color: #4A9782;
+            width: 380px;
+            padding: 20px 25px 30px;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(50, 60, 100, 0.7);
+            color: #bcc2da;
+        }
+
+        /* Heading */
+        .todo-container h2 {
+            text-align: center;
+            margin: 0 0 15px 0;
+            font-weight: 700;
+            font-size: 1.4rem;
+            color: #FFF9E5;
+            user-select: none;
+        }
+
+        /* Form wrapper */
+        .todo-form {
+            display: flex;
+            margin-bottom: 15px;
+        }
+
+        /* Task input */
+        #taskInput {
+            flex: 1;
+            background-color: #DCD0A8;
+            border: none;
+            border-radius: 4px 0 0 4px;
+            color: #0a0a0a;
+            padding: 8px 12px;
+            font-size: 0.9rem;
+            outline-offset: 2px;
+        }
+
+        #taskInput::placeholder {
+            color: #0b0b0b;
+        }
+
+        #taskInput:focus {
+            outline: 2px solid #FFF9E5;
+            background-color: #DCD0A8;
+        }
+
+        /* Date input */
+        #dateInput {
+            width: 120px;
+            background-color: #DCD0A8;
+            border: none;
+            border-left: 1px solid #040404;
+            color: #040404;
+            padding: 8px 10px;
+            font-size: 0.9rem;
+            outline-offset: 2px;
+        }
+
+        #dateInput:focus {
+            outline: 2px solid #FFF9E5;
+            background-color: #DCD0A8;
+        }
+
+        /* Add button */
+        #addBtn {
+            background-color: #FFF9E5;
+            border: none;
+            color: black;
+            padding: 0 14px;
+            font-size: 1.2rem;
+            border-radius: 0 4px 4px 0;
+            cursor: pointer;
+            transition: background-color 0.25s ease;
+        }
+
+        #addBtn:hover {
+            background-color: #DCD0A8;
+        }
+
+        #addBtn:focus {
+            outline: 2px solid #FFF9E5;
+        }
+
+        /* Filter and delete all buttons container */
+        .filters {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 13px;
+        }
+
+        /* Filter button */
+        #filterBtn {
+            background-color: #DCD0A8;
+            border: none;
+            border-radius: 4px;
+            color: #050505;
+            font-weight: 600;
+            font-size: 0.85rem;
+            padding: 6px 15px;
+            cursor: pointer;
+            user-select: none;
+            box-shadow: inset 0 -3px 0 #FFF9E5;
+            transition: background-color 0.2s ease;
+        }
+
+        #filterBtn:hover {
+            background-color: #DCD0A8;
+        }
+
+        #filterBtn:focus {
+            outline: 2px solid #FFF9E5;
+        }
+
+        /* Delete all button */
+        #deleteAllBtn {
+            background-color: #DCD0A8;
+            border: none;
+            border-radius: 4px;
+            color: black;
+            font-weight: 600;
+            font-size: 0.85rem;
+            padding: 6px 15px;
+            cursor: pointer;
+            user-select: none;
+            box-shadow: inset 0 -3px 0 #FFF9E5;
+            transition: background-color 0.2s ease;
+        }
+
+        #deleteAllBtn:hover {
+            background-color: #DCD0A8;
+        }
+
+        #deleteAllBtn:focus {
+            outline: 2px solid #FFF9E5;
+        }
+
+        /* Table styling */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #1e2647;
+            border-radius: 8px;
+            overflow: hidden;
+            font-size: 0.85rem;
+        }
+
+        thead tr {
+            background-color: #DCD0A8;
+        }
+
+        /* Table headers */
+        th {
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            font-weight: 700;
+            padding: 8px 12px;
+            text-align: left;
+            color: #060606;
+            user-select: none;
+        }
+
+        /* Table cells */
+        td {
+            padding: 8px 12px;
+            vertical-align: middle;
+            color: #090909;
+        }
+
+        /* Table rows */
+        tbody tr:nth-child(even) {
+            background-color: #FFF9E5;
+        }
+
+        tbody tr:nth-child(odd) {
+            background-color: #FFF9E5;
+        }
+
+        /* Status checkbox styling */
+        .status-checkbox {
+            cursor: pointer;
+            transform: scale(1.15);
+        }
+
+        /* Strike-through text if done */
+        .done-task {
+            text-decoration: line-through;
+            color: #0a0a0a;
+        }
+
+        /* Action buttons */
+        .action-btn {
+            background: #DCD0A8;
+            border: none;
+            color: #FFF9E5;
+            padding: 5px 10px;
+            font-size: 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+            user-select: none;
+            margin-left: 5px;
+            transition: background-color 0.2s ease;
+        }
+
+        .action-btn:hover {
+            background-color: #DCD0A8;
+        }
+
+        .action-btn:focus {
+            outline: 2px solid #FFF9E5;
+        }
+
+        /* No task found row */
+        .no-task {
+            text-align: center;
+            font-style: italic;
+            color: #050505;
+        }
+
+        /* Error message */
+        .error-msg {
+            color: #ff7373;
+            font-size: 0.8rem;
+            padding: 0 0 10px 2px;
+            user-select: none;
+            height: 18px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="todo-container" role="region" aria-label="To-Do List Application">
+        <h2 id="todoTitle">Todo List</h2>
+        <form id="todoForm" class="todo-form" aria-describedby="formError" novalidate>
+            <input type="text" id="taskInput" placeholder="Add a todo . . ." aria-required="true"
+                aria-describedby="formError" autocomplete="off" />
+            <input type="date" id="dateInput" aria-required="true" aria-describedby="formError" min="" />
+            <button type="submit" id="addBtn" aria-label="Add task to to-do list">+</button>
+        </form>
+        <div id="formError" class="error-msg" role="alert" aria-live="assertive"></div>
+        <div class="filters">
+            <button type="button" id="filterBtn" aria-pressed="false"
+                aria-label="Filter incomplete tasks">FILTER</button>
+            <button type="button" id="deleteAllBtn" aria-label="Delete all tasks">DELETE ALL</button>
+        </div>
+        <table aria-describedby="todoTitle">
+            <thead>
+                <tr>
+                    <th scope="col">Task</th>
+                    <th scope="col">Due Date</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="taskTableBody">
+                <tr id="noTaskRow">
+                    <td class="no-task" colspan="4">No task found</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        (function () {
+            const taskInput = document.getElementById('taskInput');
+            const dateInput = document.getElementById('dateInput');
+            const addBtn = document.getElementById('addBtn');
+            const todoForm = document.getElementById('todoForm');
+            const taskTableBody = document.getElementById('taskTableBody');
+            const filterBtn = document.getElementById('filterBtn');
+            const deleteAllBtn = document.getElementById('deleteAllBtn');
+            const formError = document.getElementById('formError');
+            const noTaskRow = document.getElementById('noTaskRow');
+
+            // Store tasks as array of objects {id, text, dueDate, done}
+            let tasks = [];
+
+            // Filter state: false means show all, true means show incomplete only
+            let filterIncompleteOnly = false;
+
+            // Utility: set min date for dateInput to today
+            function setMinDate() {
+                const today = new Date();
+                const yyyy = today.getFullYear();
+                const mm = (today.getMonth() + 1).toString().padStart(2, '0');
+                const dd = today.getDate().toString().padStart(2, '0');
+                dateInput.min = `${yyyy}-${mm}-${dd}`;
+            }
+            setMinDate();
+
+            // Utility: Format date to MM/DD/YYYY for display
+            function formatDate(date) {
+                const d = new Date(date);
+                if (isNaN(d)) return '';
+                const mm = (d.getMonth() + 1).toString().padStart(2, '0');
+                const dd = d.getDate().toString().padStart(2, '0');
+                const yyyy = d.getFullYear();
+                return `${mm}/${dd}/${yyyy}`;
+            }
+
+            // Validate inputs and return error message or empty string
+            function validateInputs(text, date) {
+                if (!text.trim()) return 'Please enter a task description.';
+                if (!date) return 'Please select a due date.';
+                // Date not earlier than today
+                const selectedDate = new Date(date);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                if (selectedDate < today) return 'Due date cannot be in the past.';
+                return '';
+            }
+
+            // Render tasks in the table body based on current filter and tasks array
+            function renderTasks() {
+                // Clear all rows
+                taskTableBody.innerHTML = '';
+                // Filter tasks by incomplete if filter active
+                const filteredTasks = filterIncompleteOnly ? tasks.filter(t => !t.done) : tasks;
+                if (filteredTasks.length === 0) {
+                    // Show no task found row
+                    const row = document.createElement('tr');
+                    const cell = document.createElement('td');
+                    cell.colSpan = 4;
+                    cell.className = 'no-task';
+                    cell.textContent = 'No task found';
+                    row.appendChild(cell);
+                    taskTableBody.appendChild(row);
+                    return;
+                }
+                filteredTasks.forEach((task) => {
+                    const row = document.createElement('tr');
+                    // Task text cell
+                    const taskCell = document.createElement('td');
+                    taskCell.textContent = task.text;
+                    if (task.done) taskCell.classList.add('done-task');
+                    row.appendChild(taskCell);
+                    // Due date cell
+                    const dateCell = document.createElement('td');
+                    dateCell.textContent = formatDate(task.dueDate);
+                    row.appendChild(dateCell);
+                    // Status cell with checkbox
+                    const statusCell = document.createElement('td');
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.checked = task.done;
+                    checkbox.className = 'status-checkbox';
+                    checkbox.setAttribute('aria-label', `Mark task "${task.text}" as done`);
+                    checkbox.addEventListener('change', () => {
+                        task.done = checkbox.checked;
+                        renderTasks();
+                    });
+                    statusCell.appendChild(checkbox);
+                    row.appendChild(statusCell);
+                    // Actions cell with delete button
+                    const actionsCell = document.createElement('td');
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.className = 'action-btn';
+                    deleteBtn.textContent = 'Delete';
+                    deleteBtn.setAttribute('aria-label', `Delete task "${task.text}"`);
+                    deleteBtn.addEventListener('click', () => {
+                        tasks = tasks.filter(t => t.id !== task.id);
+                        renderTasks();
+                    });
+                    actionsCell.appendChild(deleteBtn);
+                    row.appendChild(actionsCell);
+
+                    taskTableBody.appendChild(row);
+                });
+            }
+
+            // Add new task after validation
+            function addTask(e) {
+                e.preventDefault();
+                const taskText = taskInput.value;
+                const dueDate = dateInput.value;
+
+                const errorMsg = validateInputs(taskText, dueDate);
+                if (errorMsg) {
+                    formError.textContent = errorMsg;
+                    return;
+                } else {
+                    formError.textContent = '';
+                }
+
+                // Create new task object
+                const newTask = {
+                    id: Date.now(), // unique id
+                    text: taskText.trim(),
+                    dueDate,
+                    done: false,
+                };
+                tasks.push(newTask);
+                // Clear inputs
+                taskInput.value = '';
+                dateInput.value = '';
+                setMinDate(); // reset min date in case
+
+                renderTasks();
+                taskInput.focus();
+            }
+
+            // Toggle filter incomplete only
+            function toggleFilter() {
+                filterIncompleteOnly = !filterIncompleteOnly;
+                filterBtn.setAttribute('aria-pressed', filterIncompleteOnly);
+                filterBtn.textContent = filterIncompleteOnly ? 'SHOW ALL' : 'FILTER';
+                renderTasks();
+            }
+
+            // Delete all tasks with confirmation
+            function deleteAllTasks() {
+                if (tasks.length === 0) return;
+                if (confirm('Are you sure you want to delete ALL tasks? This action cannot be undone.')) {
+                    tasks = [];
+                    renderTasks();
+                }
+            }
+
+            // Event listeners
+            todoForm.addEventListener('submit', addTask);
+            filterBtn.addEventListener('click', toggleFilter);
+            deleteAllBtn.addEventListener('click', deleteAllTasks);
+
+            // Initial render
+            renderTasks();
+        })();
+    </script>
+</body>
+
+</html>
